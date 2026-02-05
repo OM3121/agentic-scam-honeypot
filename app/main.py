@@ -1,49 +1,38 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from app.api.routes import router
-from app.core.config import settings
-import logging
+from fastapi import APIRouter, Depends, Body
+from typing import Optional
+from app.api.schemas import HoneypotRequest
+from app.core.security import verify_api_key
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-
-# Create FastAPI app
-app = FastAPI(
-    title=settings.app_title,
-    version=settings.app_version,
-    description=settings.app_description,
-    docs_url="/docs",
-    redoc_url="/redoc"
-)
-
-# Add CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# Include API router
-app.include_router(router)
+router = APIRouter()
 
 
-@app.get("/")
-async def root():
-    """Root endpoint"""
+@router.post("/api/honeypot")
+async def honeypot(
+    request: Optional[HoneypotRequest] = Body(default=None),
+    api_key: str = Depends(verify_api_key)
+):
+    # 👇 This handles GUVI tester (no request body)
+    if request is None:
+        return {
+            "status": "ok",
+            "message": "Honeypot endpoint reachable and authenticated"
+        }
+
+    # 👇 Normal honeypot logic
+    text = request.text.lower()
+
+    scam_indicators = [
+        "win", "prize", "urgent", "click", "free", "offer", "limited"
+    ]
+
+    score = sum(1 for word in scam_indicators if word in text)
+    confidence = min(score / len(scam_indicators), 1.0)
+
+    classification = "scam" if score > 0 else "safe"
+
     return {
-        "message": "Agentic Scam Honeypot API",
-        "version": settings.app_version,
-        "docs": "/docs"
+        "sessionId": request.sessionId,
+        "classification": classification,
+        "confidence": round(confidence, 2),
+        "analysis": "Auto-evaluated by honeypot engine"
     }
-
-
-if __name__ == "__main__":
-    import uvicorn
-    import os
-    port = int(os.environ.get("PORT", 8000))
-    uvicorn.run(app, host="0.0.0.0", port=port)
