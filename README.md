@@ -312,3 +312,129 @@ pytest tests/
 ## License
 
 See LICENSE file for details.
+
+
+# HCL GUVI Hackathon Submission
+
+## 🧩 Problem Statement
+
+Online scams are rapidly increasing across platforms such as SMS, email, social media, and chat applications.  
+Most scam detection systems only classify messages but fail to observe attacker behavior or collect intelligence on scam patterns.
+
+Organizations lack a safe, controlled system that can:
+
+- Interact with scam messages  
+- Capture scammer intent and techniques  
+- Analyze scam content in real time  
+- Prevent direct exposure to real users  
+
+There is a need for an automated honeypot system that can receive suspicious messages via an API, analyze them intelligently, and safely respond while logging scam behavior.
+
+---
+
+## 💡 Solution Overview
+
+This project implements an **AI-driven Scam Honeypot System** exposed through a **POST API**.
+
+The system acts as a decoy endpoint that receives potentially malicious or scam content, analyzes it using rule-based logic and AI reasoning, and returns a structured response indicating whether the content is suspicious, safe, or malicious.
+
+Instead of exposing real users, the honeypot:
+
+- Intercepts scam messages  
+- Simulates engagement  
+- Collects behavioral and content insights  
+- Helps improve future scam detection systems  
+
+---
+
+## ⚙️ How the POST API Works
+
+### Endpoint
+POST /api/honeypot
+
+
+### Input (JSON Payload)
+```json
+{
+  "sessionId": "user-session-123",
+  "text": "Congratulations! You have won a prize. Click this link."
+}
+Request Flow
+Client sends suspicious message via POST API
+
+API validates request using an API key
+
+Message is processed by the honeypot engine
+
+The system evaluates scam indicators such as:
+
+Urgency phrases
+
+Rewards / prize claims
+
+Unknown links
+
+Social engineering patterns
+
+The response is generated with classification and metadata
+
+📤 Output (API Response)
+{
+  "sessionId": "user-session-123",
+  "classification": "scam",
+  "confidence": 0.91,
+  "analysis": "Message contains common scam indicators such as fake rewards and urgency."
+}
+🔐 Security & Safety Measures
+API Key Authentication
+Prevents unauthorized access to the honeypot endpoint
+
+Session Isolation
+Each request is handled independently using a session ID
+
+No Real User Interaction
+The honeypot ensures scammers never interact with real users
+
+🧠 Key Features
+RESTful POST API–based architecture
+
+AI-assisted scam detection logic
+
+Honeypot-style decoy system
+
+Secure API access using headers
+
+Scalable backend using FastAPI
+
+Cloud-deployable (Render)
+
+🛠️ Technology Stack
+Layer	Technology
+Backend	Python, FastAPI
+API Server	Uvicorn / Gunicorn
+Authentication	API Key (Header-based)
+Deployment	Render
+Documentation	OpenAPI (/docs)
+🎯 Impact & Use Cases
+Scam research & analysis
+
+Cybersecurity training datasets
+
+Fraud detection testing
+
+Secure simulation of scam interactions
+
+Educational and hackathon demonstrations
+
+👤 Hackathon Contribution
+For the HCL GUVI Hackathon, the work involved:
+
+Deploying the open-source honeypot system
+
+Configuring environment and API security
+
+Testing POST API workflows
+
+Documenting and demonstrating functionality
+
+Submitted by: Omkar Parida
